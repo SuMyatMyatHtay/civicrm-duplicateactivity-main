@@ -307,14 +307,14 @@ function duplicateactivity_civicrm_buildForm($formName, &$form)
                 'name' => ts('Save'),
                 'isDefault' => TRUE
               ),
-              array(
-                'type' => 'upload',
-                'name' => ts('Save as Draft'),
-                'spacing' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                'subName' => 'draft',
-                'icon' => 'fa-floppy-o'
-                // 'js' => $js,
-              ),
+              // array(
+              //   'type' => 'upload',
+              //   'name' => ts('Save as Draft'),
+              //   'spacing' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+              //   'subName' => 'draft',
+              //   'icon' => 'fa-floppy-o'
+              //   // 'js' => $js,
+              // ),
               array(
                 'type' => 'upload',
                 'name' => ts('Duplicate'),
@@ -334,10 +334,11 @@ function duplicateactivity_civicrm_buildForm($formName, &$form)
 
     // Set a GLOBAL that tells the hook_civicrm_pre() if the Save as Draft/ "Duplicate" button has been clicked
     $buttonName = $form->controller->getButtonName();
-    if ($buttonName == $form->getButtonName('upload', 'draft')) {
-      global $SaveAsDraftClicked;
-      $SaveAsDraftClicked = TRUE;
-    } elseif ($buttonName == $form->getButtonName('upload')) {
+    // if ($buttonName == $form->getButtonName('upload', 'draft')) {
+    //   global $SaveAsDraftClicked;
+    //   $SaveAsDraftClicked = TRUE;
+    // } 
+    if ($buttonName == $form->getButtonName('upload')) {
       global $SaveClicked;
       $SaveClicked = TRUE;
     } elseif ($buttonName == $form->getButtonName('upload', 'duplicate')) {
@@ -401,19 +402,19 @@ function duplicateactivity_civicrm_pre($op, $objectName, $id, &$params)
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
  */
-function duplicateactivity_civicrm_navigationMenu(&$menu)
-{
-  _duplicateactivity_civix_insert_navigation_menu(
-    $menu,
-    'Administer/System Settings',
-    array(
-      'label' => ts('Save as Draft Settings'),
-      'name' => 'save_as_draft',
-      'url' => 'civicrm/saveasdraft?reset=1',
-      'permission' => 'administer CiviCRM',
-      'operator' => 'OR',
-      'separator' => 0,
-    )
-  );
-  _duplicateactivity_civix_navigationMenu($menu);
-}
+// function duplicateactivity_civicrm_navigationMenu(&$menu)
+// {
+//   _duplicateactivity_civix_insert_navigation_menu(
+//     $menu,
+//     'Administer/System Settings',
+//     array(
+//       'label' => ts('Save as Draft Settings'),
+//       'name' => 'save_as_draft',
+//       'url' => 'civicrm/saveasdraft?reset=1',
+//       'permission' => 'administer CiviCRM',
+//       'operator' => 'OR',
+//       'separator' => 0,
+//     )
+//   );
+//   _duplicateactivity_civix_navigationMenu($menu);
+// }
