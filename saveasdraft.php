@@ -147,7 +147,7 @@ function duplicateActivity($originalActivityId)
   ], 0);
 
   // Log the API response for debugging
-  civi::log()->debug("Original Activity API Response: " . print_r($originalActivityResult, TRUE));
+  // civi::log()->debug("Original Activity API Response: " . print_r($originalActivityResult, TRUE));
 
   // Extract the original activity data.
   $originalActivity = $originalActivityResult->getArrayCopy();
@@ -188,7 +188,7 @@ function duplicateActivity($originalActivityId)
   }
 
 
-  civi::log()->debug("Custom Field Values: ", ['data' => $customFieldValues]);
+  // civi::log()->debug("Custom Field Values: ", ['data' => $customFieldValues]);
   // civi::log()->debug("Attachment response : " . $originalActivity['attachment']);
   // Create a new activity using the details of the original activity.
   $newActivityValues = [
@@ -222,7 +222,7 @@ function duplicateActivity($originalActivityId)
   ]);
 
   // Log the new activity response for debugging.
-  civi::log()->debug("New Activity API Response: " . print_r($newActivity, true));
+  // civi::log()->debug("New Activity API Response: " . print_r($newActivity, true));
   $newActivityResult = $newActivity->first();
   $newActivityId = $newActivityResult['id'];
   // civi::log()->debug("newActivityId : " . $newActivityId);
@@ -251,10 +251,10 @@ function duplicateActivity($originalActivityId)
         'activity_id' => $newActivityId,
       ]
     ]);
-    civi::log()->debug("Case Activity Link Response : " . print_r($caseActivityLinkResult, TRUE));
+    // civi::log()->debug("Case Activity Link Response : " . print_r($caseActivityLinkResult, TRUE));
 
   } catch (Exception $e) {
-    civi::log()->debug("No CaseActivity found for the original activity.");
+    // civi::log()->debug("No CaseActivity found for the original activity.");
   }
   CRM_Core_Session::setStatus(ts('Activity is duplicated.'), ts('Success'), 'success');
 
