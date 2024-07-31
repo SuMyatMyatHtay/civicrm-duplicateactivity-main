@@ -1,4 +1,4 @@
-Package: duplicateactivity
+Package: saveasdraft
 Copyright (C) 2024, FIXME <FIXME>
 Licensed under the GNU Affero Public License 3.0 (below).
 

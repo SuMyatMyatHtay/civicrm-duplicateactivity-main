@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/saveasdraft</path>
+    <page_callback>CRM_Saveasdraft_Form_SaveAsDraft</page_callback>
+    <title>SaveAsDraft</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>

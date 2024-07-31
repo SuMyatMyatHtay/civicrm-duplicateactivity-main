@@ -1,20 +1,20 @@
 <?php
 
-require_once 'duplicateactivity.civix.php';
+require_once 'saveasdraft.civix.php';
 
 $SaveAsDraftClicked = FALSE;
 $SaveClicked = FALSE;
 
-use CRM_duplicateactivity_ExtensionUtil as E;
+use CRM_Saveasdraft_ExtensionUtil as E;
 
 /**
  * Implements hook_civicrm_config().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/
  */
-function duplicateactivity_civicrm_config(&$config): void
+function saveasdraft_civicrm_config(&$config): void
 {
-  _duplicateactivity_civix_civicrm_config($config);
+  _saveasdraft_civix_civicrm_config($config);
 }
 
 /**
@@ -25,9 +25,9 @@ function duplicateactivity_civicrm_config(&$config): void
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_install
  */
-function duplicateactivity_civicrm_install(): void
+function saveasdraft_civicrm_install(): void
 {
-  _duplicateactivity_civix_civicrm_install();
+  _saveasdraft_civix_civicrm_install();
 }
 
 /**
@@ -38,9 +38,9 @@ function duplicateactivity_civicrm_install(): void
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_uninstall
  */
-function duplicateactivity_civicrm_uninstall(): void
+function saveasdraft_civicrm_uninstall(): void
 {
-  _duplicateactivity_civix_civicrm_uninstall();
+  _saveasdraft_civix_civicrm_uninstall();
 }
 
 /**
@@ -51,9 +51,9 @@ function duplicateactivity_civicrm_uninstall(): void
  * 
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_enable
  */
-function duplicateactivity_civicrm_enable(): void
+function saveasdraft_civicrm_enable(): void
 {
-  _duplicateactivity_civix_civicrm_enable();
+  _saveasdraft_civix_civicrm_enable();
 }
 
 /**
@@ -64,9 +64,9 @@ function duplicateactivity_civicrm_enable(): void
  * 
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_disable
  */
-function duplicateactivity_civicrm_disable(): void
+function saveasdraft_civicrm_disable(): void
 {
-  _duplicateactivity_civix_civicrm_disable();
+  _saveasdraft_civix_civicrm_disable();
 }
 
 function getDraftStatusID()
@@ -119,6 +119,7 @@ function getSelectedStatusID()
  */
 function duplicateActivity($originalActivityId)
 {
+
   // Fetch all custom field names from civicrm_custom_field table
   $customGroupResult = civicrm_api4('CustomGroup', 'get', [
     'select' => ['name'],
@@ -129,11 +130,6 @@ function duplicateActivity($originalActivityId)
   foreach ($customGroupResult as $customField) {
     $customSetNames[] = $customField['name'];
   }
-
-  // Log the API response for debugging
-  // Civi::log()->debug("Custom Fields API Response: " . print_r($customGroupResult, TRUE));
-  // Civi::log()->debug("Custom Fields Result: " . print_r($customSetNames, TRUE));
-
 
   // Get the details of the original activity.
   $originalActivityResult = civicrm_api4('Activity', 'get', [
@@ -151,7 +147,7 @@ function duplicateActivity($originalActivityId)
   ], 0);
 
   // Log the API response for debugging
-  // civi::log()->debug("Original Activity API Response: " . print_r($originalActivityResult, TRUE));
+  civi::log()->debug("Original Activity API Response: " . print_r($originalActivityResult, TRUE));
 
   // Extract the original activity data.
   $originalActivity = $originalActivityResult->getArrayCopy();
@@ -181,13 +177,8 @@ function duplicateActivity($originalActivityId)
 
   // Prepare custom field values for the new activity
   $customFieldValues = [];
-  // civi::log()->debug("originalActivity Values: ", ['data' => $originalActivity]);
-
   foreach ($originalActivity as $fieldName => $fieldValue) {
-    //this is checking whether there are custom fees in that activity : Su 
-    // if (strpos($fieldName, 'custom_') === 0) {
-    //   $customFieldValues[$fieldName] = $fieldValue;
-    // }
+
     foreach ($customSetNames as $customSetName) {
       if (strpos($fieldName, $customSetName) === 0) {
         $customFieldValues[$fieldName] = $fieldValue;
@@ -195,7 +186,9 @@ function duplicateActivity($originalActivityId)
       }
     }
   }
-  // civi::log()->debug("Custom Field Values: ", ['data' => $customFieldValues]);
+
+
+  civi::log()->debug("Custom Field Values: ", ['data' => $customFieldValues]);
   // civi::log()->debug("Attachment response : " . $originalActivity['attachment']);
   // Create a new activity using the details of the original activity.
   $newActivityValues = [
@@ -229,7 +222,7 @@ function duplicateActivity($originalActivityId)
   ]);
 
   // Log the new activity response for debugging.
-  // civi::log()->debug("New Activity API Response: " . print_r($newActivity, true));
+  civi::log()->debug("New Activity API Response: " . print_r($newActivity, true));
   $newActivityResult = $newActivity->first();
   $newActivityId = $newActivityResult['id'];
   // civi::log()->debug("newActivityId : " . $newActivityId);
@@ -258,10 +251,10 @@ function duplicateActivity($originalActivityId)
         'activity_id' => $newActivityId,
       ]
     ]);
-    // civi::log()->debug("Case Activity Link Response : " . print_r($caseActivityLinkResult, TRUE));
+    civi::log()->debug("Case Activity Link Response : " . print_r($caseActivityLinkResult, TRUE));
 
   } catch (Exception $e) {
-    // civi::log()->debug("No CaseActivity found for the original activity.");
+    civi::log()->debug("No CaseActivity found for the original activity.");
   }
   CRM_Core_Session::setStatus(ts('Activity is duplicated.'), ts('Success'), 'success');
 
@@ -279,7 +272,7 @@ function duplicateActivity($originalActivityId)
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_buildForm
  */
-function duplicateactivity_civicrm_buildForm($formName, &$form)
+function saveasdraft_civicrm_buildForm($formName, &$form)
 {
   $editContactActivity = $formName == 'CRM_Activity_Form_Activity' && $form->getAction() == CRM_Core_Action::UPDATE;
   $addContactActivity = $formName == 'CRM_Activity_Form_Activity' && $form->getAction() == CRM_Core_Action::ADD;
@@ -334,10 +327,10 @@ function duplicateactivity_civicrm_buildForm($formName, &$form)
 
     // Set a GLOBAL that tells the hook_civicrm_pre() if the Save as Draft/ "Duplicate" button has been clicked
     $buttonName = $form->controller->getButtonName();
-    // if ($buttonName == $form->getButtonName('upload', 'draft')) {
-    //   global $SaveAsDraftClicked;
-    //   $SaveAsDraftClicked = TRUE;
-    // } 
+    if ($buttonName == $form->getButtonName('upload', 'draft')) {
+      global $SaveAsDraftClicked;
+      $SaveAsDraftClicked = TRUE;
+    }
     if ($buttonName == $form->getButtonName('upload')) {
       global $SaveClicked;
       $SaveClicked = TRUE;
@@ -368,7 +361,7 @@ function duplicateactivity_civicrm_buildForm($formName, &$form)
  * @param int $id
  * @param array $params
  */
-function duplicateactivity_civicrm_pre($op, $objectName, $id, &$params)
+function saveasdraft_civicrm_pre($op, $objectName, $id, &$params)
 {
   global $SaveAsDraftClicked;
   global $SaveClicked;
@@ -402,19 +395,19 @@ function duplicateactivity_civicrm_pre($op, $objectName, $id, &$params)
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
  */
-// function duplicateactivity_civicrm_navigationMenu(&$menu)
-// {
-//   _duplicateactivity_civix_insert_navigation_menu(
-//     $menu,
-//     'Administer/System Settings',
-//     array(
-//       'label' => ts('Save as Draft Settings'),
-//       'name' => 'save_as_draft',
-//       'url' => 'civicrm/saveasdraft?reset=1',
-//       'permission' => 'administer CiviCRM',
-//       'operator' => 'OR',
-//       'separator' => 0,
-//     )
-//   );
-//   _duplicateactivity_civix_navigationMenu($menu);
-// }
+function saveasdraft_civicrm_navigationMenu(&$menu)
+{
+  _saveasdraft_civix_insert_navigation_menu(
+    $menu,
+    'Administer/System Settings',
+    array(
+      'label' => ts('Save as Draft Settings'),
+      'name' => 'save_as_draft',
+      'url' => 'civicrm/saveasdraft?reset=1',
+      'permission' => 'administer CiviCRM',
+      'operator' => 'OR',
+      'separator' => 0,
+    )
+  );
+  _saveasdraft_civix_navigationMenu($menu);
+}
